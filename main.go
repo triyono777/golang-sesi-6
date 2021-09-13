@@ -5,88 +5,9 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
-// id
-// name
-// descripsi
-// bahan
-
-// Roll  is model for sushi pai
-type Roll struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Ingridient  string `json:"ingridient"`
-}
-
-// Init rolls var as slice
-var rolls []Roll
-
-// show all sushi
-func getRolls(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(rolls)
-}
-
-// Show single sushi
-func getRoll(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	params := mux.Vars(r)
-	for _, roll := range rolls {
-		if roll.ID == params["id"] {
-			json.NewEncoder(w).Encode(roll)
-			return
-		}
-	}
-}
-
-// add single sushi
-func createRoll(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	var newRoll Roll
-	json.NewDecoder(r.Body).Decode(&newRoll)
-	newRoll.ID = strconv.Itoa(len(rolls) + 1)
-	rolls = append(rolls, newRoll)
-
-	json.NewEncoder(w).Encode(newRoll)
-
-}
-
-func updateRoll(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	params := mux.Vars(r)
-	for i, item := range rolls {
-		if item.ID==params["id"]{
-			rolls = append(rolls[:i], rolls[i+1:] ...)
-			var newRoll Roll
-			json.NewDecoder(r.Body).Decode(&newRoll)
-			newRoll.ID = params["id"]
-			rolls  = append(rolls,newRoll)
-			json.NewEncoder(w).Encode(newRoll)
-			return
-
-
-		}
-	}
-}
-func deleteRoll(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	params := mux.Vars(r)
-	for i, item := range rolls {
-		if item.ID==params["id"]{
-			rolls = append(rolls[:i], rolls[i+1:] ...)
-			break
-
-		}
-	}
-
-
-}
 
 func checkPolindrom(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -120,30 +41,29 @@ func isPalindrome(arg string)bool{
 func getLang(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var structInput DetailLanguage
-	var influenStru Influen
+	var influenStruct Influen
 
-	influenStru.InfluencedBy = append(influenStru.InfluencedBy,"B")
-	influenStru.InfluencedBy = append(influenStru.InfluencedBy,"ALGOL 68")
-	influenStru.InfluencedBy = append(influenStru.InfluencedBy,"Assembly")
-	influenStru.InfluencedBy = append(influenStru.InfluencedBy,"FORTRAN")
+	influenStruct.InfluencedBy = append(influenStruct.InfluencedBy,"B")
+	influenStruct.InfluencedBy = append(influenStruct.InfluencedBy,"ALGOL 68")
+	influenStruct.InfluencedBy = append(influenStruct.InfluencedBy,"Assembly")
+	influenStruct.InfluencedBy = append(influenStruct.InfluencedBy,"FORTRAN")
 
-	influenStru.Influences = append(influenStru.Influences,"C++")
-	influenStru.Influences = append(influenStru.Influences,"Objective-C")
-	influenStru.Influences = append(influenStru.Influences,"C#")
-	influenStru.Influences = append(influenStru.Influences,"Java")
-	influenStru.Influences = append(influenStru.Influences,"Javascript")
-	influenStru.Influences = append(influenStru.Influences,"PHP")
-	influenStru.Influences = append(influenStru.Influences,"Go")
+	influenStruct.Influences = append(influenStruct.Influences,"C++")
+	influenStruct.Influences = append(influenStruct.Influences,"Objective-C")
+	influenStruct.Influences = append(influenStruct.Influences,"C#")
+	influenStruct.Influences = append(influenStruct.Influences,"Java")
+	influenStruct.Influences = append(influenStruct.Influences,"Javascript")
+	influenStruct.Influences = append(influenStruct.Influences,"PHP")
+	influenStruct.Influences = append(influenStruct.Influences,"Go")
 
 	structInput.Language = "C"
 	structInput.Appeared = 1972
 	structInput.Created = append(structInput.Created,"Dennis Ritchie")
 	structInput.Functional = true
 	structInput.Objectorient = false
-	structInput.Relation.InfluencedBy = influenStru.InfluencedBy
-	structInput.Relation.Influences = influenStru.Influences
+	structInput.Relation.InfluencedBy = influenStruct.InfluencedBy
+	structInput.Relation.Influences = influenStruct.Influences
 
-	//json.NewDecoder(r.Body).Decode(&detailLanguage)
 	msg =append(msg,structInput)
 	json.NewEncoder(w).Encode(structInput)
 
@@ -153,13 +73,6 @@ var msg []DetailLanguage
 
 func addLang(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	//var newRoll Roll
-	//json.NewDecoder(r.Body).Decode(&newRoll)
-	//newRoll.ID = strconv.Itoa(len(rolls) + 1)
-	//rolls = append(rolls, newRoll)
-	//
-	//json.NewEncoder(w).Encode(newRoll)
-
 	idx := 1
 
 	lengthStored := len(ListStoredData)
@@ -185,22 +98,6 @@ func addLang(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
-	//Generate Mock data
-
-	rolls = append(rolls,
-		Roll{
-			ID:          "1",
-			Name:        "salmon",
-			Description: "crab salmon",
-			Ingridient:  "salmon nori, rice",
-		}, Roll{
-			ID:          "2",
-			Name:        "salmon 2",
-			Description: "crab salmon 2",
-			Ingridient:  "salmon nori, rice 2",
-		},
-
-	)
 
 	// init router
 	router := mux.NewRouter()
@@ -210,13 +107,6 @@ func main() {
 	router.HandleFunc("/getLang", getLang).Methods("GET")
 	router.HandleFunc("/addLang", addLang).Methods("POST")
 
-
-
-	router.HandleFunc("/sushi", getRolls).Methods("GET")
-	router.HandleFunc("/sushi/{id}", getRoll).Methods("GET")
-	router.HandleFunc("/sushi", createRoll).Methods("POST")
-	router.HandleFunc("/sushi/{id}", updateRoll).Methods("POST")
-	router.HandleFunc("/sushi/{id}", deleteRoll).Methods("DELETE")
 
 	log.Fatal(http.ListenAndServe(":5000", router))
 
