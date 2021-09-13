@@ -117,6 +117,71 @@ func isPalindrome(arg string)bool{
 	return true
 }
 
+func getLang(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var structInput DetailLanguage
+	var influenStru Influen
+
+	influenStru.InfluencedBy = append(influenStru.InfluencedBy,"B")
+	influenStru.InfluencedBy = append(influenStru.InfluencedBy,"ALGOL 68")
+	influenStru.InfluencedBy = append(influenStru.InfluencedBy,"Assembly")
+	influenStru.InfluencedBy = append(influenStru.InfluencedBy,"FORTRAN")
+
+	influenStru.Influences = append(influenStru.Influences,"C++")
+	influenStru.Influences = append(influenStru.Influences,"Objective-C")
+	influenStru.Influences = append(influenStru.Influences,"C#")
+	influenStru.Influences = append(influenStru.Influences,"Java")
+	influenStru.Influences = append(influenStru.Influences,"Javascript")
+	influenStru.Influences = append(influenStru.Influences,"PHP")
+	influenStru.Influences = append(influenStru.Influences,"Go")
+
+	structInput.Language = "C"
+	structInput.Appeared = 1972
+	structInput.Created = append(structInput.Created,"Dennis Ritchie")
+	structInput.Functional = true
+	structInput.Objectorient = false
+	structInput.Relation.InfluencedBy = influenStru.InfluencedBy
+	structInput.Relation.Influences = influenStru.Influences
+
+	//json.NewDecoder(r.Body).Decode(&detailLanguage)
+	msg =append(msg,structInput)
+	json.NewEncoder(w).Encode(structInput)
+
+}
+var ListStoredData []*StoredData
+var msg []DetailLanguage
+
+func addLang(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	//var newRoll Roll
+	//json.NewDecoder(r.Body).Decode(&newRoll)
+	//newRoll.ID = strconv.Itoa(len(rolls) + 1)
+	//rolls = append(rolls, newRoll)
+	//
+	//json.NewEncoder(w).Encode(newRoll)
+
+	idx := 1
+
+	lengthStored := len(ListStoredData)
+	json.NewDecoder(r.Body).Decode(&ListStoredData)
+
+	idx += lengthStored
+	detailStored := new(StoredData)
+	for _,rangeMsg := range msg{
+		detailStored.ID = idx
+		detailStored.ListDetailLang.Language = rangeMsg.Language
+		detailStored.ListDetailLang.Appeared = rangeMsg.Appeared
+		detailStored.ListDetailLang.Created  = rangeMsg.Created
+		detailStored.ListDetailLang.Functional  = rangeMsg.Functional
+		detailStored.ListDetailLang.Objectorient = rangeMsg.Objectorient
+		detailStored.ListDetailLang.Relation = rangeMsg.Relation
+		ListStoredData = append(ListStoredData,detailStored)
+		idx++
+	}
+	json.NewEncoder(w).Encode(detailStored)
+
+
+}
 
 func main() {
 
@@ -142,6 +207,11 @@ func main() {
 
 	//handle end point / routing
 	router.HandleFunc("/polindrom/{args}", checkPolindrom).Methods("GET")
+	router.HandleFunc("/getLang", getLang).Methods("GET")
+	router.HandleFunc("/addLang", addLang).Methods("POST")
+
+
+
 	router.HandleFunc("/sushi", getRolls).Methods("GET")
 	router.HandleFunc("/sushi/{id}", getRoll).Methods("GET")
 	router.HandleFunc("/sushi", createRoll).Methods("POST")
